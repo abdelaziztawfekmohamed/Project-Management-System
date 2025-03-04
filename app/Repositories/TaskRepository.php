@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Task;
 use App\Interfaces\TaskInterface;
-use App\Models\Project;
 
 class TaskRepository implements TaskInterface
 {
