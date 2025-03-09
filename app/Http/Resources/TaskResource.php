@@ -30,7 +30,7 @@ class TaskResource extends JsonResource
             // 'assigned_user' => new UserResource($this->assignedUser),
             'created_by' => new UserResource($this->createdBy),
             'updated_by' => new UserResource($this->updatedBy),
-            'created_at' => Carbon::parse($this->created_at)->toFormattedDateString(),
+            'created_at' => Carbon::parse($this->created_at)->format('Y-m-d'),
         ];
     }
 }

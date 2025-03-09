@@ -11,8 +11,18 @@ class Project extends Model
     /** @use HasFactory<\Database\Factories\ProjectFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'status', 'due_date', 'created_by', 'updated_by'];
+    protected $fillable = [
+        'name',
+        'description', 
+        'status', 
+        'due_date', 
+        'created_by', 
+        'updated_by'
+    ];
 
+    protected $casts = [
+        'due_date' => 'datetime',
+    ];
 
     public function tasks(): HasMany
     {

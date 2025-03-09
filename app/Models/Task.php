@@ -23,6 +23,11 @@ class Task extends Model
         'updated_by',
         'project_id',
     ];
+
+    protected $casts = [
+        'due_date' => 'datetime',
+    ];
+
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
