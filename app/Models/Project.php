@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
@@ -13,10 +14,10 @@ class Project extends Model
 
     protected $fillable = [
         'name',
-        'description', 
-        'status', 
-        'due_date', 
-        'created_by', 
+        'description',
+        'status',
+        'due_date',
+        'created_by',
         'updated_by'
     ];
 
@@ -37,5 +38,10 @@ class Project extends Model
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class);
     }
 }
