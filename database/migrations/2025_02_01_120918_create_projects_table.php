@@ -17,6 +17,7 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->timestamp('due_date')->nullable();
             $table->string('status');
+            $table->foreignId('assigned_user_id')->nullable()->constrained('users');
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');
             $table->timestamps();
