@@ -57,6 +57,12 @@ export default function AuthenticatedLayout({
                 >
                   My Tasks
                 </NavLink>
+                <NavLink
+                  href={route("post.index")}
+                  active={route().current("post.index")}
+                >
+                  Community
+                </NavLink>
               </div>
             </div>
 
