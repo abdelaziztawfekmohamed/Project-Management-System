@@ -19,7 +19,7 @@ class ProjectFactory extends Factory
         return [
             'name' => fake()->sentence(6),
             'description' => fake()->realText(),
-            'due_date' => fake()->dateTimeBetween('now', '+1 year')->format('Y-m-d H:i:s'),
+            'due_date' => fake()->dateTimeBetween('now', '+1 year'),
             'status' => fake()->randomElement(['pending', 'in_progress', 'completed']),
             'created_by' => fake()->randomElement([1, 2]),
             'updated_by' => fake()->randomElement([1, 2]),
