@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
         $teamMemberRole = Role::create(['name' => RolesEnum::TeamMember->value]);
+        $teamLeaderRole = Role::create(['name' => RolesEnum::TeamLeader->value]);
         $projectManagerRole = Role::create(['name' => RolesEnum::ProjectManager->value]);
         $adminRole = Role::create(['name' => RolesEnum::Admin->value]);
 
@@ -50,12 +51,15 @@ class DatabaseSeeder extends Seeder
 
         $teamMemberRole->syncPermissions([$UpvoteDownvotePermission]);
 
+        $teamLeaderRole->syncPermissions([$UpvoteDownvotePermission, $manageCommentsPermission,]);
+
         $projectManagerRole->syncPermissions([$UpvoteDownvotePermission, $manageCommentsPermission]);
 
         $adminRole->syncPermissions([
             $UpvoteDownvotePermission,
             $manageCommentsPermission,
-            $manageUsersPermission
+            $manageUsersPermission,
+            $managePostsPermission
         ]);
 
         User::factory()->create([
@@ -63,7 +67,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'abdulaziz@example.com',
             'password' => bcrypt('123.321A'),
             'email_verified_at' => now(),
-        ])->assignRole(RolesEnum::Admin);
+        ])->assignRole(RolesEnum::Admin->value);
 
         User::factory()->create([
             'id' => 2,
@@ -71,7 +75,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'ahmed@example.com',
             'password' => bcrypt('123.321A'),
             'email_verified_at' => now()
-        ])->assignRole(RolesEnum::ProjectManager);
+        ])->assignRole(RolesEnum::ProjectManager->value);
 
         User::factory()->create([
             'id' => 3,
@@ -79,7 +83,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'john@example.com',
             'password' => bcrypt('123.321A'),
             'email_verified_at' => now()
-        ])->assignRole(RolesEnum::TeamMember);
+        ])->assignRole(RolesEnum::TeamLeader->value);
 
         // Project::factory()->count(30)->hasTasks(30)->create();
 
