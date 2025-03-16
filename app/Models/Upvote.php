@@ -10,7 +10,7 @@ class Upvote extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['feature_id', 'user_id', 'upvote'];
+    protected $fillable = ['post_id', 'user_id', 'upvote'];
 
     public function post(): BelongsTo
     {
