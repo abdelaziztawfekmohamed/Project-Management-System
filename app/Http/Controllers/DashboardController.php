@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\TaskResource;
 use App\Services\TaskService;
 use App\Services\UserService;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -35,6 +36,8 @@ class DashboardController extends Controller
         $myActiveTasks = $this->taskService->activeTasks($userID);
 
         $activeTasks = TaskResource::collection($myActiveTasks);
+
+        // dd(Auth::user());
 
         return Inertia::render(
             'Dashboard',
