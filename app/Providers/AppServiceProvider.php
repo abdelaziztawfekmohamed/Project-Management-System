@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use App\Interfaces\TaskInterface;
 use App\Interfaces\UserInterface;
+use App\Interfaces\PostInterface;
 use App\Repositories\TaskRepository;
 use App\Repositories\UserRepository;
+use App\Repositories\PostRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProjectInterface::class, ProjectRepository::class);
         $this->app->bind(TaskInterface::class, TaskRepository::class);
         $this->app->bind(UserInterface::class, UserRepository::class);
+        $this->app->bind(PostInterface::class, PostRepository::class);
     }
 
     /**
