@@ -26,6 +26,11 @@ class UserService
         return Auth::user();
     }
 
+    public function getAuthUserPermissions($user)
+    {
+        return $user->getAllPermissions()->pluck('name');
+    }
+
     public function getUsers($filters, $sortField, $sortDirection): LengthAwarePaginator
     {
         $query = $this->userInterface->getAllUsers();
