@@ -18,8 +18,6 @@ class PostService
 
     public function getPosts($currentUserId): LengthAwarePaginator
     {
-        $query = $this->postInterface->getAllPosts();
-
         return $this->postInterface->getPaginatedResults($currentUserId);
     }
 
