@@ -3,6 +3,7 @@ import { Head, Link, usePage, usePoll } from "@inertiajs/react";
 import { Post, PaginatedData, User } from "@/types";
 import PostItem from "@/Components/PostItem";
 import { can } from "@/helpers";
+import ToastContainer from "@/Components/ToastContainer";
 
 interface IndexProps {
   posts: PaginatedData<Post>;
@@ -11,7 +12,7 @@ interface IndexProps {
 
 export default function Index({ posts, user }: IndexProps) {
   usePoll(3000);
-  // console.log(user);
+  // console.log(posts.data[0].comments);
   return (
     <AuthenticatedLayout
       header={
@@ -21,6 +22,7 @@ export default function Index({ posts, user }: IndexProps) {
       }
     >
       <Head title="Posts" />
+      <ToastContainer />
 
       {can(user, "manage_posts") && (
         <div className="mb-8">
@@ -33,7 +35,12 @@ export default function Index({ posts, user }: IndexProps) {
         </div>
       )}
       {posts.data.map((post) => (
-        <PostItem post={post} key={post.id} user={user} />
+        <PostItem
+          post={post}
+          key={post.id}
+          comments={post.comments}
+          user={user}
+        />
       ))}
     </AuthenticatedLayout>
   );
