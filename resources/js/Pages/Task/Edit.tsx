@@ -14,10 +14,14 @@ import { FormEventHandler } from "react";
 export default function Edit({
   task,
   projects,
+  page,
   users,
+  prevRouteName,
 }: {
   task: Task;
   projects: Projects;
+  page: number;
+  prevRouteName: string;
   users: Users;
 }) {
   const { data, setData, put, errors, reset } = useForm({
@@ -28,8 +32,11 @@ export default function Edit({
     project_id: task.project.id || "",
     priority: task.priority || "",
     assigned_user_id: task.assigned_user_id || "",
+    page: page || 1,
+    prevRouteName: prevRouteName || "",
   });
-  console.log(data);
+  // console.log(data);
+  console.log(task);
   const onSubmit: FormEventHandler = (e) => {
     e.preventDefault();
     put(route("task.update", task.id));
@@ -183,12 +190,24 @@ export default function Edit({
                 />
               </div>
               <div className="mt-4 text-right">
-                <Link
-                  href={route("task.index")}
-                  className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
-                >
-                  Cancel
-                </Link>
+                {prevRouteName === "project" ? (
+                  <Link
+                    href={route("project.show", {
+                      project: task.project.id,
+                      page: page,
+                    })}
+                    className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
+                  >
+                    Cancel
+                  </Link>
+                ) : (
+                  <Link
+                    href={route("task.index", { page: page })}
+                    className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
+                  >
+                    Cancel
+                  </Link>
+                )}
                 <button className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600">
                   Submit
                 </button>

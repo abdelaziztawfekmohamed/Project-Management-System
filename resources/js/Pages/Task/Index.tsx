@@ -44,7 +44,6 @@ const Index = ({ tasks, queryParams, success }: IndexProps) => {
               <TasksTable
                 tasks={tasks}
                 queryParams={queryParams}
-                success={success}
                 hideProjectColumn={false}
               />
             </div>
