@@ -22,6 +22,7 @@ class ProjectResource extends JsonResource
             'description' => $this->description,
             'due_date' => Carbon::parse($this->due_date)->format('Y-m-d'),
             'status' => $this->status,
+            'assigned_project_manager_id' => $this->assigned_project_manager_id,
             // 'image_path' => $this->image_path,
             'created_at' => Carbon::parse($this->created_at)->format('Y-m-d'),
             'created_by' => new UserResource($this->createdBy),
