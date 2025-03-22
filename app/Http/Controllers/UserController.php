@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -19,21 +20,10 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
-    private function extractQueryParams(Request $request): array
-    {
-        $filters = [
-            'name' => $request->input('name') ?: null,
-            'email' => $request->input('email') ?: null,
-        ];
-
-        $sortField = $request->input('sort_field', 'created_at');
-        $sortDirection = $request->input('sort_direction', 'asc');
-
-        return [$filters, $sortField, $sortDirection];
-    }
-
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', User::class);
+
         [$filters, $sortField, $sortDirection] = $this->extractQueryParams($request);
 
         $users = $this->userService->getUsers($filters, $sortField, $sortDirection);
@@ -47,11 +37,15 @@ class UserController extends Controller
 
     public function create()
     {
+        Gate::authorize('create', User::class);
+
         return Inertia::render("User/Create");
     }
 
     public function store(StoreUserRequest $request)
     {
+        Gate::authorize('create', User::class);
+
         $validatedData = $request->validated();
 
         $this->userService->createUser($validatedData);
@@ -62,6 +56,8 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        Gate::authorize('update', $user);
+
         return Inertia::render("User/Edit", [
             "user" => new UserResource($user),
         ]);
@@ -69,6 +65,8 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        Gate::authorize('update', $user);
+
         $validatedData = $request->validated();
         $this->userService->updateUser($validatedData, $user);
 
@@ -78,6 +76,8 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        Gate::authorize('delete', $user);
+
         $user->delete();
 
         return to_route('user.index')

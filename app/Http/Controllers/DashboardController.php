@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\RolesEnum;
 use App\Http\Resources\TaskResource;
+use App\Http\Resources\UserResource;
 use App\Services\TaskService;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +26,9 @@ class DashboardController extends Controller
         $user = $this->userService->getTheAuthUser();
         $userID = $user->id;
 
+        // $userRole = $user->hasRole(RolesEnum::Admin->value);
+        // dd($userRole);
+
         $totalPendingTasks = $this->taskService->totalPendingTasks();
         $myPendingTasks = $this->taskService->myPendingTasks($userID);
 
@@ -38,6 +43,7 @@ class DashboardController extends Controller
         $activeTasks = TaskResource::collection($myActiveTasks);
 
         // dd(Auth::user());
+        $user = new UserResource($user);
 
         return Inertia::render(
             'Dashboard',
@@ -48,7 +54,8 @@ class DashboardController extends Controller
                 'myProgressTasks',
                 'totalCompletedTasks',
                 'myCompletedTasks',
-                'activeTasks'
+                'activeTasks',
+                'user'
             )
         );
     }

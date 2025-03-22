@@ -13,6 +13,7 @@ use App\Services\TaskService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class TaskController extends Controller
@@ -28,24 +29,14 @@ class TaskController extends Controller
         $this->userService = $userService;
     }
 
-    private function extractQueryParams(Request $request): array
-    {
-        $filters = [
-            'name' => $request->input('name') ?: null,
-            'status' => $request->input('status') ?: null,
-        ];
-
-        $sortField = $request->input('sort_field', 'created_at');
-        $sortDirection = $request->input('sort_direction', 'asc');
-
-        return [$filters, $sortField, $sortDirection];
-    }
-
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Task::class);
+
         [$filters, $sortField, $sortDirection] = $this->extractQueryParams($request);
 
         $tasks = $this->taskService->getTasks($filters, $sortField, $sortDirection);
+        // dd($tasks);
 
         return Inertia::render("Task/Index", [
             "tasks" => TaskResource::collection($tasks),
@@ -56,6 +47,8 @@ class TaskController extends Controller
 
     public function create()
     {
+        Gate::authorize('create', Task::class);
+
         $projects = $this->projectService->getAllProjectsForTasks();
         $users = $this->userService->getAllUsersForTasks();
 
@@ -67,6 +60,8 @@ class TaskController extends Controller
 
     public function store(StoreTaskRequest $request)
     {
+        Gate::authorize('create', Task::class);
+
         $validatedData = $request->validated();
 
         $this->taskService->createTask($validatedData);
@@ -77,35 +72,57 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
+        Gate::authorize('view', $task);
         // dd($task);
         return Inertia::render("Task/Show", [
             "task" => new TaskResource($task),
         ]);
     }
 
-    public function edit(Task $task)
+    public function edit(Task $task, Request $request)
     {
+        Gate::authorize('update', $task);
+
         $projects = $this->projectService->getAllProjectsForTasks();
         $users = $this->userService->getAllUsersForTasks();
+        $page = $request->input('page', 1);
+        $prevRouteName = $request->input('prevRouteName');
+        // dd($prevRouteName);
+
 
         return Inertia::render("Task/Edit", [
             "task" => new TaskResource($task),
             'projects' => ProjectResource::collection($projects),
             'users' => UserResource::collection($users),
+            'page' => $page,
+            'prevRouteName' => $prevRouteName
         ]);
     }
 
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $validatedData = $request->validated();
-        $this->taskService->updateTask($validatedData, $task);
+        Gate::authorize('update', $task);
 
-        return to_route('task.index')
-            ->with('success', 'Task updated successfully.');
+        $validatedData = $request->validated();
+        // dd($validatedData);
+        $this->taskService->updateTask($validatedData, $task);
+        $page = $validatedData['page'];
+        $prevRouteName = $validatedData['prevRouteName'];
+        $project_id = $task->project->id;
+
+        if ($prevRouteName === 'task') {
+            return to_route('task.index', ['page' => $page])
+                ->with('success', 'Task updated successfully.');
+        } else {
+            return to_route('project.show', ['project' => $project_id, 'page' => $page])
+                ->with('success', 'Task updated successfully.');
+        }
     }
 
     public function destroy(Task $task)
     {
+        Gate::authorize('delete', $task);
+
         $task->delete();
 
         return to_route('task.index')

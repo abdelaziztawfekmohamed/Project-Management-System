@@ -18,7 +18,8 @@ class CommentController extends Controller
 
         Comment::create($validatedData);
 
-        return back()->with('success', 'Comment created successfully.');
+        return back()
+            ->with('success', 'Comment created successfully.');
     }
 
     public function destroy(Comment $comment)
@@ -30,6 +31,7 @@ class CommentController extends Controller
         // $postId = $comment->post_id;
         $comment->delete();
 
-        return back()->with('success', 'Comment deleted successfully.');
+        return back()
+            ->with('success', 'Comment deleted successfully.');
     }
 }
