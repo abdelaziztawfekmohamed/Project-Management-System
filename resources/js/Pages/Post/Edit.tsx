@@ -11,8 +11,7 @@ import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function Edit({ post }: { post: Post }) {
   const { data, setData, processing, errors, put } = useForm({
-    name: post.name,
-    description: post.description,
+    content: post.content,
   });
 
   const updatePost: FormEventHandler = (ev) => {
@@ -37,33 +36,17 @@ export default function Edit({ post }: { post: Post }) {
         <div className="p-6 text-gray-900 dark:text-gray-100 flex gap-8">
           <form onSubmit={updatePost} className="w-full">
             <div className="mb-8">
-              <InputLabel htmlFor="name" value="Name" />
-
-              <TextInput
-                id="name"
-                className="mt-1 block w-full"
-                value={data.name}
-                onChange={(e) => setData("name", e.target.value)}
-                required
-                isFocused
-                autoComplete="name"
-              />
-
-              <InputError className="mt-2" message={errors.name} />
-            </div>
-
-            <div className="mb-8">
-              <InputLabel htmlFor="description" value="Description" />
+              <InputLabel htmlFor="content" value="Content" />
 
               <TextAreaInput
-                id="description"
+                id="content"
                 rows={6}
                 className="mt-1 block w-full"
-                value={data.description}
-                onChange={(e) => setData("description", e.target.value)}
+                value={data.content}
+                onChange={(e) => setData("content", e.target.value)}
               />
 
-              <InputError className="mt-2" message={errors.description} />
+              <InputError className="mt-2" message={errors.content} />
             </div>
 
             <div className="flex items-center gap-4">

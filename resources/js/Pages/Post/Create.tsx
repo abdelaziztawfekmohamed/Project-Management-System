@@ -5,15 +5,16 @@ import PostItem from "@/Components/PostItem";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
-import { FormEventHandler } from "react";
+import { FormEventHandler, useState } from "react";
 import TextAreaInput from "@/Components/TextAreaInput";
 import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function Create() {
   const { data, setData, processing, errors, post } = useForm({
-    name: "",
-    description: "",
+    content: "",
   });
+
+  const [content, setContent] = useState(data.content);
 
   const createPost: FormEventHandler = (ev) => {
     ev.preventDefault();
@@ -32,44 +33,31 @@ export default function Create() {
       }
     >
       <Head title="Create New Post" />
+      <div className="py-12">
+        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="mb-4 overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
+            <div className="p-6 text-gray-900 dark:text-gray-100 flex gap-8">
+              <form onSubmit={createPost} className="w-full">
+                <div className="mb-8">
+                  <InputLabel htmlFor="content" value="Content" />
 
-      <div className="mb-4 overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
-        <div className="p-6 text-gray-900 dark:text-gray-100 flex gap-8">
-          <form onSubmit={createPost} className="w-full">
-            <div className="mb-8">
-              <InputLabel htmlFor="name" value="Name" />
+                  <TextAreaInput
+                    id="content"
+                    rows={6}
+                    className="mt-1 block w-full"
+                    value={data.content}
+                    onChange={(e) => setData("content", e.target.value)}
+                  />
 
-              <TextInput
-                id="name"
-                className="mt-1 block w-full"
-                value={data.name}
-                onChange={(e) => setData("name", e.target.value)}
-                required
-                isFocused
-                autoComplete="name"
-              />
+                  <InputError className="mt-2" message={errors.content} />
+                </div>
 
-              <InputError className="mt-2" message={errors.name} />
+                <div className="flex items-center gap-4">
+                  <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                </div>
+              </form>
             </div>
-
-            <div className="mb-8">
-              <InputLabel htmlFor="description" value="Description" />
-
-              <TextAreaInput
-                id="description"
-                rows={6}
-                className="mt-1 block w-full"
-                value={data.description}
-                onChange={(e) => setData("description", e.target.value)}
-              />
-
-              <InputError className="mt-2" message={errors.description} />
-            </div>
-
-            <div className="flex items-center gap-4">
-              <PrimaryButton disabled={processing}>Save</PrimaryButton>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </AuthenticatedLayout>
