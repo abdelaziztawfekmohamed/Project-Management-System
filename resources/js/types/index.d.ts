@@ -42,7 +42,7 @@ export type Comment = {
 export type Post = {
   id: number;
   name: string;
-  description: string;
+  content: string;
   user: User;
   created_at: string;
   upvote_count: number;
@@ -52,6 +52,8 @@ export type Post = {
 };
 
 export interface Meta {
+  [x: string]: unknown;
+  currentPage: any;
   links: {
     url: string | null;
     label: string;
