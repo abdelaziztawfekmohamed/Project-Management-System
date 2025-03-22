@@ -36,7 +36,9 @@ class UpdateTaskRequest extends FormRequest
             'priority' => [
                 'required',
                 Rule::in(['low', 'medium', 'high'])
-            ]
+            ],
+            'page' => ['nullable', 'integer'],
+            'prevRouteName' => ['nullable', 'string']
         ];
     }
 }

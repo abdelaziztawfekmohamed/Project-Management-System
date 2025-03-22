@@ -24,8 +24,7 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'category' => ['required',  Rule::in(TeamEnum::categories())],
+            'content' => ['nullable', 'string'],
         ];
     }
 }
