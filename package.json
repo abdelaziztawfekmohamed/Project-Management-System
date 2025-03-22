@@ -25,7 +25,6 @@
         "vite": "^6.0.11"
     },
     "dependencies": {
-        "@heroicons/react": "^2.2.0",
-        "react-toastify": "^11.0.5"
+        "@heroicons/react": "^2.2.0"
     }
 }
