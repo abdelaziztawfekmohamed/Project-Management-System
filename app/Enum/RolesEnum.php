@@ -12,7 +12,7 @@ enum RolesEnum: string
     public static function labels(): array
     {
         return [
-            self::Admin->value => 'Admin',
+            self::Admin->value => 'admin',
             self::ProjectManager->value => 'project_manager',
             self::TeamLeader->value => 'team_leader',
             self::TeamMember->value => 'team_member',
@@ -22,10 +22,10 @@ enum RolesEnum: string
     public function label()
     {
         return match ($this) {
-            self::Admin => 'Admin',
-            self::ProjectManager => 'Project Manager',
-            self::TeamLeader => 'Team Leader',
-            self::TeamMember => 'User',
+            self::Admin => 'admin',
+            self::ProjectManager => 'project_manager',
+            self::TeamLeader => 'team_leader',
+            self::TeamMember => 'team_member',
         };
     }
 }
