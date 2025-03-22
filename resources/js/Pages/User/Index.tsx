@@ -1,6 +1,6 @@
 import Pagination from "@/Components/Pagination";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import { QueryParams } from "@/types/queryParams";
 import { useSearch } from "@/Hooks/useSearch";
 import { useSort } from "@/Hooks/useSort";
@@ -8,6 +8,9 @@ import FlashMessage from "@/Components/FlashMessage";
 import { User, Users } from "@/types";
 import UsersTableHeaders from "@/Components/UsersTableHeaders";
 import UsersTableFilters from "@/Components/UsersTableFilters";
+import { useState } from "react";
+import Modal from "@/Components/Modal";
+import { can } from "@/helpers";
 interface IndexProps {
   users: Users;
   queryParams?: QueryParams | null;
@@ -20,15 +23,21 @@ const Index = ({ users, queryParams, success }: IndexProps) => {
     routeName: "user.index",
   });
 
+  const authUser = usePage().props.auth.user;
+  console.log(authUser);
+  console.log(users);
+
   const { sortChanged } = useSort({ queryParams, routeName: "user.index" });
 
   const updatedParams = { ...queryParams };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+
   const deleteUser = (user: User) => {
-    if (!window.confirm("Are you sure you want to delete the user?")) {
-      return;
-    }
-    router.delete(route("user.destroy", user.id));
+    router.delete(
+      route("user.destroy", { user: user.id, page: users.meta.currentPage })
+    );
   };
 
   return (
@@ -106,21 +115,29 @@ const Index = ({ users, queryParams, success }: IndexProps) => {
                           <th className="px-3 py-2 text-gray-100 text-nowrap">
                             {user.created_at}
                           </th>
-
-                          <td className="px-3 py-2 text-nowrap">
-                            <Link
-                              href={route("user.edit", user.id)}
-                              className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
-                            >
-                              Edit
-                            </Link>
-                            <button
-                              onClick={(e) => deleteUser(user)}
-                              className="font-medium text-red-600 dark:text-red-500 hover:underline mx-1"
-                            >
-                              Delete
-                            </button>
-                          </td>
+                          {(can(user, "edit_users") ||
+                            can(user, "delete_users")) && (
+                            <td className="px-3 py-2 text-nowrap">
+                              <Link
+                                href={route("user.edit", {
+                                  user: user.id,
+                                  page: users.meta.currentPage,
+                                })}
+                                className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
+                              >
+                                Edit
+                              </Link>
+                              <button
+                                onClick={(e) => {
+                                  setUserToDelete(user);
+                                  setIsModalOpen(true);
+                                }}
+                                className="font-medium text-red-600 dark:text-red-500 hover:underline mx-1"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          )}
                         </tr>
                       ))
                     )}
@@ -132,6 +149,42 @@ const Index = ({ users, queryParams, success }: IndexProps) => {
           </div>
         </div>
       </div>
+
+      {/* Modal for delete confirmation */}
+      <Modal
+        show={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="md"
+      >
+        <div className="p-6">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            Confirm Deletion
+          </h2>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            Are you sure you want to delete the project "{userToDelete?.name}
+            "?
+          </p>
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md mr-2"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (userToDelete) {
+                  deleteUser(userToDelete);
+                  setIsModalOpen(false);
+                }
+              }}
+              className="px-4 py-2 bg-red-600 text-white rounded-md"
+            >
+              Yes, delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </AuthenticatedLayout>
   );
 };

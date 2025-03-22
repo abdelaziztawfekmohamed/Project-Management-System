@@ -3,7 +3,7 @@ import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { User } from "@/types";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { FormEventHandler } from "react";
 
 export default function Edit({ user }: { user: User }) {
@@ -14,6 +14,9 @@ export default function Edit({ user }: { user: User }) {
     password_confirmation: "",
   });
   console.log(data);
+
+  const authUser = usePage().props.auth.user;
+
   const onSubmit: FormEventHandler = (e) => {
     e.preventDefault();
     put(route("user.update", user.id));
@@ -38,6 +41,8 @@ export default function Edit({ user }: { user: User }) {
               onSubmit={onSubmit}
               className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"
             >
+              {/* {authUser.id === user.id && (
+                <> */}
               <div className="mt-4">
                 <InputLabel htmlFor="name" value="Name" />
 
@@ -104,7 +109,8 @@ export default function Edit({ user }: { user: User }) {
                   className="mt-2"
                 />
               </div>
-
+              {/* </>
+              )} */}
               <div className="mt-4 text-right">
                 <Link
                   href={route("user.index")}
