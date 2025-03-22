@@ -19,6 +19,8 @@ class TaskService
     public function getTasks($filters, $sortField, $sortDirection): LengthAwarePaginator
     {
         $query = $this->taskInterface->getAllTasks();
+        // $orderedQuery = $query->orderBy('id');
+
 
         if (isset($filters['name'])) {
             $query = $this->taskInterface->filterByName($query, $filters['name']);
