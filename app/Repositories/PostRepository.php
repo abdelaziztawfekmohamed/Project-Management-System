@@ -15,6 +15,11 @@ class PostRepository implements PostInterface
         return Post::query();
     }
 
+    public function getPostComments(Post $post)
+    {
+        return $post->comments();
+    }
+
     public function getPaginatedResults($currentUserId)
     {
         $pginatedQuery = Post::latest()
