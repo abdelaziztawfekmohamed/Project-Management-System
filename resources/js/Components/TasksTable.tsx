@@ -9,17 +9,18 @@ import { Tasks } from "@/types/tasks";
 import { QueryParams } from "@/types/queryParams";
 import { useSearch } from "@/Hooks/useSearch";
 import { useSort } from "@/Hooks/useSort";
+import { useState } from "react";
+import Modal from "./Modal";
 interface IndexProps {
   tasks: Tasks;
   queryParams?: QueryParams | null;
-  success: string | null;
+  // page: number;
   hideProjectColumn: boolean;
 }
 
 const TasksTable = ({
   tasks,
   queryParams,
-  success,
   hideProjectColumn = false,
 }: IndexProps) => {
   const { searchFieldChanged, onKeyPress } = useSearch({
@@ -30,12 +31,20 @@ const TasksTable = ({
   const { sortChanged } = useSort({ queryParams, routeName: "task.index" });
 
   const updatedParams = { ...queryParams };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+  const prevRouteName = tasks.meta.path.split("/")[3];
 
   const deleteTask = (task: Task) => {
-    if (!window.confirm("Are you sure you want to delete the Task?")) {
-      return;
-    }
-    router.delete(route("task.destroy", task.id));
+    // if (!window.confirm("Are you sure you want to delete the Task?")) {
+    //   return;
+    // }
+    router.delete(
+      route("task.destroy", {
+        task: task.id,
+        page: tasks.meta.current_page,
+      })
+    );
   };
 
   return (
@@ -108,13 +117,20 @@ const TasksTable = ({
                   </td>
                   <td className="px-3 py-2 text-nowrap">
                     <Link
-                      href={route("task.edit", task.id)}
+                      href={route("task.edit", {
+                        task: task.id,
+                        page: tasks.meta.current_page,
+                        prevRouteName: prevRouteName,
+                      })}
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
                     >
                       Edit
                     </Link>
                     <button
-                      onClick={(e) => deleteTask(task)}
+                      onClick={(e) => {
+                        setTaskToDelete(task);
+                        setIsModalOpen(true);
+                      }}
                       className="font-medium text-red-600 dark:text-red-500 hover:underline mx-1"
                     >
                       Delete
@@ -127,6 +143,41 @@ const TasksTable = ({
         </table>
       </div>
       <Pagination links={tasks.meta.links} />
+      {/* Modal for delete confirmation */}
+      <Modal
+        show={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="md"
+      >
+        <div className="p-6">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            Confirm Deletion
+          </h2>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            Are you sure you want to delete the project "{taskToDelete?.name}
+            "?
+          </p>
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md mr-2"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (taskToDelete) {
+                  deleteTask(taskToDelete);
+                  setIsModalOpen(false);
+                }
+              }}
+              className="px-4 py-2 bg-red-600 text-white rounded-md"
+            >
+              Yes, delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };

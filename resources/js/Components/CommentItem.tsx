@@ -1,5 +1,5 @@
 import { Comment, User } from "@/types";
-import { useForm, usePage } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import { can } from "../helpers";
 
 export default function CommentItem({
@@ -9,13 +9,17 @@ export default function CommentItem({
   comment: Comment;
   user: User;
 }) {
-  const form = useForm();
+  const { delete: destroy } = useForm();
   // console.log(user);
   // console.log(comment.user);
   const deleteComment = () => {
-    form.delete(route("comment.destroy", comment.id), {
+    destroy(route("comment.destroy", comment.id), {
       preserveScroll: true,
       preserveState: true,
+      onSuccess: () => {},
+      onError: (errors) => {
+        console.log("errors", errors);
+      },
     });
   };
 
@@ -46,7 +50,7 @@ export default function CommentItem({
         </h3>
         <div className="italic mt-1">{comment.comment}</div>
       </div>
-      {can(user, "manage_comments") && comment.user.id == user.id && (
+      {can(user, "delete_comments") && comment.user.id == user.id && (
         <div className="flex items-center py-2 px-6">
           <button onClick={deleteComment}>
             <svg
