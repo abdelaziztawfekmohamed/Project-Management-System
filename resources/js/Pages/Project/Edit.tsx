@@ -9,12 +9,19 @@ import { Project } from "@/types/project";
 import { Head, Link, useForm } from "@inertiajs/react";
 import { FormEventHandler } from "react";
 
-export default function Edit({ project }: { project: Project }) {
+export default function Edit({
+  project,
+  page,
+}: {
+  project: Project;
+  page: number;
+}) {
   const { data, setData, put, errors, reset } = useForm({
     name: project.name || "",
     status: project.status || "",
     description: project.description || "",
     due_date: project.due_date || "",
+    // page: page || 1,
   });
   console.log(data);
   const onSubmit: FormEventHandler = (e) => {
@@ -111,7 +118,7 @@ export default function Edit({ project }: { project: Project }) {
               </div>
               <div className="mt-4 text-right">
                 <Link
-                  href={route("project.index")}
+                  href={route("project.index", { page: page })}
                   className="bg-gray-100 py-1 px-3 text-gray-800 rounded shadow transition-all hover:bg-gray-200 mr-2"
                 >
                   Cancel

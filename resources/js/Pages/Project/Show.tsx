@@ -5,6 +5,9 @@ import { PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP } from "@/constants";
 import { Project } from "@/types/project";
 import { QueryParams } from "@/types/queryParams";
 import { Tasks } from "@/types/tasks";
+import FlashMessage from "@/Components/FlashMessage";
+import { useState } from "react";
+import Modal from "@/Components/Modal";
 
 interface ShowProps {
   project: Project;
@@ -14,6 +17,9 @@ interface ShowProps {
 }
 
 const Show = ({ project, queryParams, success, tasks }: ShowProps) => {
+  console.log(tasks.meta.path);
+  // const routeName = tasks.meta.path.split("/")[3];
+  // console.log(routeName);
   return (
     <AuthenticatedLayout
       header={
@@ -35,6 +41,7 @@ const Show = ({ project, queryParams, success, tasks }: ShowProps) => {
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <FlashMessage message={success} />
             {/* <div>
               <img
                 src={project.image_path}
@@ -103,7 +110,6 @@ const Show = ({ project, queryParams, success, tasks }: ShowProps) => {
             <div className="p-6 text-gray-900 dark:text-gray-100">
               <TasksTable
                 tasks={tasks}
-                success={success}
                 queryParams={queryParams}
                 hideProjectColumn={true}
               />

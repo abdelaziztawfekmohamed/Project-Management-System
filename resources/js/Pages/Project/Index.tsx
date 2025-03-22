@@ -10,6 +10,8 @@ import { QueryParams } from "@/types/queryParams";
 import { useSearch } from "@/Hooks/useSearch";
 import { useSort } from "@/Hooks/useSort";
 import FlashMessage from "@/Components/FlashMessage";
+import { useState } from "react";
+import Modal from "@/Components/Modal";
 interface IndexProps {
   projects: Projects;
   queryParams?: QueryParams | null;
@@ -21,16 +23,28 @@ const Index = ({ projects, queryParams, success }: IndexProps) => {
     queryParams,
     routeName: "project.index",
   });
+  console.log(projects.meta.current_page);
+  // console.log(window.route().routes); // Should include "projects.edit"
+  // const url = route("project.edit", { project: project.id, page: 3 });
+  // console.log(url); // Should output: "/projects/5/edit?page=3"
 
   const { sortChanged } = useSort({ queryParams, routeName: "project.index" });
 
   const updatedParams = { ...queryParams };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+
   const deleteProject = (project: Project) => {
-    if (!window.confirm("Are you sure you want to delete the project?")) {
-      return;
-    }
-    router.delete(route("project.destroy", project.id));
+    // if (!window.confirm("Are you sure you want to delete the project?")) {
+    //   return;
+    // }
+    router.delete(
+      route("project.destroy", {
+        project: project.id,
+        page: projects.meta.current_page,
+      })
+    );
   };
 
   return (
@@ -129,13 +143,27 @@ const Index = ({ projects, queryParams, success }: IndexProps) => {
                           </td>
                           <td className="px-3 py-2 text-nowrap">
                             <Link
-                              href={route("project.edit", project.id)}
+                              href={route("project.edit", {
+                                project: project.id,
+                                page: projects.meta.current_page,
+                                // page: 3,
+                              })}
                               className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
                             >
                               Edit
                             </Link>
+                            {/* <Link
+                              href={`project/${project.id}/edit?page=${projects.meta.current_page}`}
+                              className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"
+                            >
+                              Edit
+                            </Link> */}
+
                             <button
-                              onClick={(e) => deleteProject(project)}
+                              onClick={() => {
+                                setProjectToDelete(project);
+                                setIsModalOpen(true);
+                              }}
                               className="font-medium text-red-600 dark:text-red-500 hover:underline mx-1"
                             >
                               Delete
@@ -152,6 +180,41 @@ const Index = ({ projects, queryParams, success }: IndexProps) => {
           </div>
         </div>
       </div>
+      {/* Modal for delete confirmation */}
+      <Modal
+        show={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="md"
+      >
+        <div className="p-6">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            Confirm Deletion
+          </h2>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            Are you sure you want to delete the project "{projectToDelete?.name}
+            "?
+          </p>
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md mr-2"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (projectToDelete) {
+                  deleteProject(projectToDelete);
+                  setIsModalOpen(false);
+                }
+              }}
+              className="px-4 py-2 bg-red-600 text-white rounded-md"
+            >
+              Yes, delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </AuthenticatedLayout>
   );
 };
