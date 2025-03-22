@@ -15,52 +15,140 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/dashboard');
 
 Route::middleware(['auth', 'verified', sprintf(
-    'role:%s|%s|%s',
+    'role:%s|%s|%s|$s',
     RolesEnum::ProjectManager->value,
     RolesEnum::TeamLeader->value,
     RolesEnum::Admin->value,
     RolesEnum::TeamMember->value
 )])->group(function () {
+
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
-    Route::resource('user', UserController::class);
-    Route::middleware('role:' . RolesEnum::Admin->value)->group(function () {
+
+    Route::middleware(sprintf(
+        'role:%s|%s|%s',
+        RolesEnum::Admin->value,
+        RolesEnum::ProjectManager->value,
+        RolesEnum::TeamLeader->value,
+    ))->group(function () {
         Route::get('/user', [UserController::class, 'index'])
             ->name('user.index');
-        Route::get('/user/{user}/edit', [UserController::class, 'edit'])
-            ->name('user.edit');
-        Route::put('/user/{user}', [UserController::class, 'update'])
-            ->name('user.update');
     });
+
+    Route::middleware('role:' . RolesEnum::Admin->value)
+        ->group(function () {
+            Route::get('/user/{user}', [UserController::class, 'show'])
+                ->name('user.show');
+
+            Route::get('/user/{user}/edit', [UserController::class, 'edit'])
+                ->name('user.edit');
+
+            Route::put('/user/{user}', [UserController::class, 'update'])
+                ->name('user.update');
+
+            Route::delete('/user/{user}', [UserController::class, 'destroy'])
+                ->name('user.destroy');
+
+            Route::get('/user/create', [UserController::class, 'create'])
+                ->name('user.create');
+
+            Route::post('/user', [UserController::class, 'store'])
+                ->name('user.store');
+        });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::resource('project', ProjectController::class);
+
+    Route::middleware(sprintf(
+        'role:%s|%s',
+        RolesEnum::Admin->value,
+        RolesEnum::ProjectManager->value,
+        RolesEnum::TeamLeader->value
+    ))->group(function () {
+        Route::get('/project', [ProjectController::class, 'index'])
+            ->name('project.index');
+
+        Route::get('/project/{project}', [ProjectController::class, 'show'])
+            ->name('project.show');
+    });
+
+    Route::middleware('role' . RolesEnum::Admin->value)->group(function () {
+        Route::get('/project/create', [ProjectController::class, 'create'])
+            ->name('project.create');
+
+        Route::post('/project', [ProjectController::class, 'store'])
+            ->name('project.store');
+
+        Route::get('/project/{project}/edit', [ProjectController::class, 'edit'])
+            ->name('project.edit');
+
+        Route::put('/project/{project}', [ProjectController::class, 'update'])
+            ->name('project.update');
+
+        Route::delete('/project/{project}', [ProjectController::class, 'destroy'])
+            ->name('project.destroy');
+    });
+
     Route::get('/task/my-tasks', [TaskController::class, 'myTasks'])
-        ->name('task.myTasks');
-    Route::resource('task', TaskController::class);
+        ->name('task.myTasks')->middleware(sprintf(
+            'role:%s|%s',
+            RolesEnum::TeamLeader->value,
+            RolesEnum::TeamMember->value
+        ));
+
+    Route::middleware(sprintf(
+        'role:%s|%s',
+        RolesEnum::Admin->value,
+        RolesEnum::ProjectManager->value,
+        RolesEnum::TeamLeader->value
+    ))->group(function () {
+        Route::get('/task', [TaskController::class, 'index'])
+            ->name('task.index');
+
+        Route::get('/task/{task}/edit', [TaskController::class, 'edit'])
+            ->name('task.edit');
+
+        Route::put('/task/{task}', [TaskController::class, 'update'])
+            ->name('task.update');
+
+        Route::get('/task/create', [TaskController::class, 'create'])
+            ->name('task.create');
+
+        Route::post('/task', [TaskController::class, 'store'])
+            ->name('task.store');
+
+        Route::delete('/task/{task}', [TaskController::class, 'destroy'])
+            ->name('task.destroy');
+    });
+
+    Route::get('/task/{task}', [TaskController::class, 'show'])
+        ->name('task.show')->middleware(sprintf(
+            'role:%s|%s|%s|%s',
+            RolesEnum::Admin->value,
+            RolesEnum::ProjectManager->value,
+            RolesEnum::TeamLeader->value,
+            RolesEnum::TeamMember->value,
+        ));
+
+    Route::delete('post/{post}', [PostController::class, 'destroy'])
+        ->name('post.destroy')
+        ->middleware('role:' . RolesEnum::Admin->value);
+
     Route::resource('post', PostController::class)
-        ->except(['index', 'show'])
-        ->middleware('can:' . PermissionsEnum::ManagePosts->value);
-
-    Route::get('/post', [PostController::class, 'index'])
-        ->name('post.index');
-
-    Route::get('/post/{post}', [PostController::class, 'show'])
-        ->name('post.show');
+        ->except('destroy');
 
     Route::post('/post/{post}/upvote', [UpvoteController::class, 'store'])
         ->name('upvote.store');
     Route::delete('/upvote/{post}', [UpvoteController::class, 'destroy'])
         ->name('upvote.destroy');
 
-    Route::post('/post/{post}/comments', [CommentController::class, 'store'])
-        ->name('comment.store')
-        ->middleware('can:' . PermissionsEnum::ManageComments->value);
+    Route::resource('comment', CommentController::class)
+        ->except('destroy');
+
     Route::delete('/comment/{comment}', [CommentController::class, 'destroy'])
         ->name('comment.destroy')
-        ->middleware('can:' . PermissionsEnum::ManageComments->value);
+        ->middleware('role:' . RolesEnum::Admin->value);
 });
 
 
