@@ -26,7 +26,7 @@ export default function AuthenticatedLayout({
                 </Link>
               </div>
 
-              <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+              <div className="hidden space-x-8 sm:-my-px sm:ms-10 md:flex">
                 <NavLink
                   href={route("dashboard")}
                   active={route().current("dashboard")}
@@ -66,7 +66,7 @@ export default function AuthenticatedLayout({
               </div>
             </div>
 
-            <div className="hidden sm:ms-6 sm:flex sm:items-center">
+            <div className="hidden md:ms-6 md:flex md:items-center">
               <div className="relative ms-3">
                 <Dropdown>
                   <Dropdown.Trigger>
@@ -109,7 +109,7 @@ export default function AuthenticatedLayout({
               </div>
             </div>
 
-            <div className="-me-2 flex items-center sm:hidden">
+            <div className="-me-2 flex items-center md:hidden">
               <button
                 onClick={() =>
                   setShowingNavigationDropdown(
@@ -150,7 +150,7 @@ export default function AuthenticatedLayout({
 
         <div
           className={
-            (showingNavigationDropdown ? "block" : "hidden") + " sm:hidden"
+            (showingNavigationDropdown ? "block" : "hidden") + " md:hidden"
           }
         >
           <div className="space-y-1 pb-3 pt-2">
@@ -159,6 +159,36 @@ export default function AuthenticatedLayout({
               active={route().current("dashboard")}
             >
               Dashboard
+            </ResponsiveNavLink>
+            <ResponsiveNavLink
+              href={route("project.index")}
+              active={route().current("project.index")}
+            >
+              Project
+            </ResponsiveNavLink>
+            <ResponsiveNavLink
+              href={route("task.index")}
+              active={route().current("task.index")}
+            >
+              All Tasks
+            </ResponsiveNavLink>
+            <ResponsiveNavLink
+              href={route("user.index")}
+              active={route().current("user.index")}
+            >
+              Users
+            </ResponsiveNavLink>
+            <ResponsiveNavLink
+              href={route("task.myTasks")}
+              active={route().current("task.myTasks")}
+            >
+              My Tasks
+            </ResponsiveNavLink>
+            <ResponsiveNavLink
+              href={route("post.index")}
+              active={route().current("post.index")}
+            >
+              Community
             </ResponsiveNavLink>
           </div>
 
@@ -187,7 +217,6 @@ export default function AuthenticatedLayout({
           </div>
         </div>
       </nav>
-
       {header && (
         <header className="bg-white shadow dark:bg-gray-800">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -195,7 +224,6 @@ export default function AuthenticatedLayout({
           </div>
         </header>
       )}
-
       <main>{children}</main>
     </div>
   );
