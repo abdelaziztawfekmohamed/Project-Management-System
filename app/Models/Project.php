@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -18,7 +19,8 @@ class Project extends Model
         'status',
         'due_date',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'assigned_project_manager_id',
     ];
 
     protected $casts = [
@@ -42,6 +44,11 @@ class Project extends Model
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class);
+        return $this->belongsToMany(Team::class, 'project_team', 'project_id', 'team_id', 'id', 'id');
+    }
+
+    public function projectManager(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_project_manager_id');
     }
 }

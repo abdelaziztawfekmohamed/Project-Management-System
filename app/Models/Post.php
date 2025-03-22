@@ -12,7 +12,7 @@ class Post extends Model
     /** @use HasFactory<\Database\Factories\PostFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'created_by'];
+    protected $fillable = ['name', 'content', 'created_by'];
 
     public function upvotes(): HasMany
     {
